@@ -1,9 +1,13 @@
 package entity
 
 import (
+	"errors"
+
 	"github.com/oaraujocesar/go-expert-api/pkg/entity"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var ErrInvalidEntity = errors.New("invalid entity")
 
 type User struct {
 	ID       entity.ID `json:"id"`
@@ -13,6 +17,10 @@ type User struct {
 }
 
 func NewUser(name, email, password string) (*User, error) {
+	if password == "" {
+		return nil, ErrInvalidEntity
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

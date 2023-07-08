@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,13 @@ func TestNewUser(t *testing.T) {
 	assert.NotEmpty(t, user.Password)
 	assert.Equal(t, "john@doe.com", user.Email)
 	assert.Equal(t, "John Doe", user.Name)
+}
+
+func TestNewUserWithInvalidPassword(t *testing.T) {
+	user, err := NewUser("John Doe", "john@doe.com", "")
+	fmt.Println(user)
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidEntity, err)
 }
 
 func TestValidatePassword(t *testing.T) {
