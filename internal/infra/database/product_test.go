@@ -2,6 +2,7 @@ package database
 
 import (
 	"testing"
+	"time"
 
 	"github.com/oaraujocesar/go-expert-api/internal/entity"
 	e "github.com/oaraujocesar/go-expert-api/pkg/entity"
@@ -9,6 +10,24 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+func createProducts(db *gorm.DB) {
+	productDB := NewProduct(db)
+
+	ps := []entity.Product{
+		{Name: "P1", Price: 13.0},
+		{Name: "P2", Price: 143.0},
+		{Name: "P3", Price: 11.0},
+		{Name: "P4", Price: 122.0},
+	}
+
+	for _, p := range ps {
+		product, _ := entity.NewProduct(p.Name, p.Price)
+		time.Sleep(time.Millisecond * 100)
+		productDB.Create(product)
+	}
+
+}
 
 func TestCreateProduct(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
@@ -136,5 +155,54 @@ func TestUpdateProduct(t *testing.T) {
 		err = productDB.Update(product)
 
 		assert.NotNil(t, err)
+	})
+}
+
+func TestFindAllProducts(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	db.AutoMigrate(&entity.Product{})
+
+	createProducts(db)
+
+	t.Run("it should return all the products according with pagination and ascending order", func(t *testing.T) {
+		productDB := NewProduct(db)
+
+		products, err := productDB.FindAll(1, 2, "asc")
+		assert.Nil(t, err)
+		assert.Len(t, products, 2)
+		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
+	})
+
+	t.Run("it should return the products in ascending order when sort arg is empty", func(t *testing.T) {
+		productDB := NewProduct(db)
+
+		products, err := productDB.FindAll(1, 2, "")
+		assert.Nil(t, err)
+		assert.Len(t, products, 2)
+		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
+	})
+
+	t.Run("it should return the products in descending order when sort arg is empty", func(t *testing.T) {
+		productDB := NewProduct(db)
+
+		products, err := productDB.FindAll(1, 4, "desc")
+
+		assert.Nil(t, err)
+		assert.Len(t, products, 4)
+		assert.Equal(t, products[0].Name, "P4")
+	})
+
+	t.Run("it should return an error if page and limit are 0", func(t *testing.T) {
+		productDB := NewProduct(db)
+
+		products, err := productDB.FindAll(0, 0, "")
+
+		assert.Nil(t, err)
+		assert.Len(t, products, 4)
+		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
 	})
 }

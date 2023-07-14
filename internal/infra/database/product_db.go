@@ -47,15 +47,15 @@ func (p *Product) FindAll(page, limit int, sort string) ([]entity.Product, error
 	var products []entity.Product
 	var err error
 
-	if sort != "" && sort != "asc" && sort != "desc" {
+	if sort != "asc" && sort != "desc" {
 		sort = "asc"
 	}
 
 	if page != 0 && limit != 0 {
 		offset := (page - 1) * limit
-		err = p.DB.Offset(offset).Limit(limit).Order("created_at" + sort).Find(&products).Error
+		err = p.DB.Offset(offset).Limit(limit).Order("created_at " + sort).Find(&products).Error
 	} else {
-		err = p.DB.Order("created_at" + sort).Find(&products).Error
+		err = p.DB.Order("created_at " + sort).Find(&products).Error
 	}
 
 	return products, err
