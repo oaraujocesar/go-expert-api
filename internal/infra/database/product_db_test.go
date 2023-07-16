@@ -29,13 +29,19 @@ func createProducts(db *gorm.DB) {
 
 }
 
-func TestCreateProduct(t *testing.T) {
+func openDBConnection(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
 	db.AutoMigrate(&entity.Product{})
+
+	return db
+}
+
+func TestCreateProduct(t *testing.T) {
+	db := openDBConnection(t)
 
 	product, err := entity.NewProduct("Product 1", 13.0)
 	if err != nil {
@@ -55,12 +61,7 @@ func TestCreateProduct(t *testing.T) {
 }
 
 func TestFindProductById(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-
-	db.AutoMigrate(&entity.Product{})
+	db := openDBConnection(t)
 
 	t.Run("It should get product by id", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
@@ -87,12 +88,7 @@ func TestFindProductById(t *testing.T) {
 }
 
 func TestDeleteProduct(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-
-	db.AutoMigrate(&entity.Product{})
+	db := openDBConnection(t)
 
 	t.Run("It should delete product by id", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
@@ -113,12 +109,7 @@ func TestDeleteProduct(t *testing.T) {
 }
 
 func TestUpdateProduct(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-
-	db.AutoMigrate(&entity.Product{})
+	db := openDBConnection(t)
 
 	t.Run("It should update the price and name", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
@@ -159,12 +150,7 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 func TestFindAllProducts(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-
-	db.AutoMigrate(&entity.Product{})
+	db := openDBConnection(t)
 
 	createProducts(db)
 
