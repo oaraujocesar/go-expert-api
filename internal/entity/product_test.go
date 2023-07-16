@@ -8,7 +8,7 @@ import (
 
 func TestNewProduct(t *testing.T) {
 	product, err := NewProduct("Product 1", 10.0)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	assert.NotEmpty(t, product.ID)
 	assert.Equal(t, "Product 1", product.Name)

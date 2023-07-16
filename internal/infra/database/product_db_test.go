@@ -54,7 +54,7 @@ func TestCreateProduct(t *testing.T) {
 	var productFound entity.Product
 	err = db.First(&productFound, "id = ?", product.ID).Error
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, product.ID, productFound.ID)
 	assert.Equal(t, product.Name, productFound.Name)
 	assert.Equal(t, product.Price, productFound.Price)
@@ -65,14 +65,14 @@ func TestFindProductById(t *testing.T) {
 
 	t.Run("It should get product by id", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		productDB := NewProduct(db)
 		productDB.Create(product)
 
 		productFound, err := productDB.FindById(product.ID)
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, product.ID, productFound.ID)
 		assert.Equal(t, product.Name, productFound.Name)
 		assert.Equal(t, product.Price, productFound.Price)
@@ -92,14 +92,14 @@ func TestDeleteProduct(t *testing.T) {
 
 	t.Run("It should delete product by id", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		productDB := NewProduct(db)
 		productDB.Create(product)
 
 		err = productDB.Delete(product.ID)
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		var productFound entity.Product
 		err = db.First(&productFound, "id = ?", product.ID).Error
@@ -113,7 +113,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	t.Run("It should update the price and name", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		productDB := NewProduct(db)
 		productDB.Create(product)
@@ -123,12 +123,12 @@ func TestUpdateProduct(t *testing.T) {
 
 		err = productDB.Update(product)
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		var productFound entity.Product
 		err = db.First(&productFound, "id = ?", product.ID).Error
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, product.ID, productFound.ID)
 		assert.Equal(t, product.Name, productFound.Name)
 		assert.Equal(t, product.Price, productFound.Price)
@@ -139,7 +139,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	t.Run("It should return error when product not found", func(t *testing.T) {
 		product, err := entity.NewProduct("Product 1", 13.0)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		productDB := NewProduct(db)
 
@@ -158,7 +158,7 @@ func TestFindAllProducts(t *testing.T) {
 		productDB := NewProduct(db)
 
 		products, err := productDB.FindAll(1, 2, "asc")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, products, 2)
 		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
 	})
@@ -167,7 +167,7 @@ func TestFindAllProducts(t *testing.T) {
 		productDB := NewProduct(db)
 
 		products, err := productDB.FindAll(1, 2, "")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, products, 2)
 		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
 	})
@@ -177,7 +177,7 @@ func TestFindAllProducts(t *testing.T) {
 
 		products, err := productDB.FindAll(1, 4, "desc")
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, products, 4)
 		assert.Equal(t, products[0].Name, "P4")
 	})
@@ -187,7 +187,7 @@ func TestFindAllProducts(t *testing.T) {
 
 		products, err := productDB.FindAll(0, 0, "")
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, products, 4)
 		assert.Greater(t, products[len(products)-1].CreatedAt, products[0].CreatedAt)
 	})

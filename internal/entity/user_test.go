@@ -9,7 +9,7 @@ import (
 
 func TestNewUser(t *testing.T) {
 	user, err := NewUser("John Doe", "john@doe.com", "123456")
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	assert.NotNil(t, user)
 	assert.NotEmpty(t, user.ID)
