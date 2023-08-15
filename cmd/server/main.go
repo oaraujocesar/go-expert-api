@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/oaraujocesar/go-expert-api/configs"
 	"github.com/oaraujocesar/go-expert-api/internal/entity"
 	"github.com/oaraujocesar/go-expert-api/internal/infra/database"
@@ -27,8 +28,9 @@ func main() {
 	productDB := database.NewProduct(db)
 	productHandler := handlers.NewProductHandler(productDB)
 
-	http.HandleFunc("/products", productHandler.CreateProduct)
+	r := chi.NewRouter()
+	r.Post("/products", productHandler.CreateProduct)
 
 	fmt.Println("Server running on http://localhost:8000...")
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":8000", r)
 }
