@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/oaraujocesar/go-expert-api/configs"
 	"github.com/oaraujocesar/go-expert-api/internal/entity"
 	"github.com/oaraujocesar/go-expert-api/internal/infra/database"
@@ -29,6 +30,8 @@ func main() {
 	productHandler := handlers.NewProductHandler(productDB)
 
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/ping"))
 	r.Post("/products", productHandler.CreateProduct)
 
 	fmt.Println("Server running on http://localhost:8000...")
